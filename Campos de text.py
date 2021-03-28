@@ -1,38 +1,55 @@
 #Campos de texto en Tkinter
 
 from tkinter import *
+from tkinter import ttk
 
 
 root = Tk()
 root.title("PCF Creator")
 # root.config()
 
-#Title frame and label
-title_frame = Frame(root, width = 480, height = 320, bg="lightblue", bd="10")
-title_frame.pack()
+#Creating TabControl object and declaring tabs
+tabControl = ttk.Notebook(root, width = 480, height = 320)
 
-title_label = Label(title_frame, text = "Welcome to PCF Creator", font=("Consolas", 24))
+HowToUseTab = ttk.Frame(tabControl)
+submitTab = ttk.Frame(tabControl)
+projectdataTab = ttk.Frame(tabControl)
+fielddefTab = ttk.Frame(tabControl)
+labelxmlTab = ttk.Frame(tabControl)
+
+tabControl.add(HowToUseTab, text = "How to use")
+tabControl.add(submitTab, text = "submit.html")
+tabControl.add(projectdataTab, text = "projectdata.html")
+tabControl.add(fielddefTab, text = "fieldDef.xml")
+tabControl.add(labelxmlTab, text = "labelXML.js")
+
+tabControl.pack(expand = 1, fill = "both")
+
+
+# Tab How to use
+
+title_label = Label(HowToUseTab, text = "Welcome to PCF Creator", font=("Consolas", 24))
 title_label.pack()
 
-#File to modify selection
+# Tab submit.html
 
-intro_label = Label(root, text = "Choose the file that you want to modify:", font=("Consolas", 12))
-intro_label.pack(anchor=W)
+Label(submitTab, text = "Choose the fields that you want to delete:").pack(anchor=NW)
 
-submit_file = StringVar()
-submit_file.set(False)
-projectdata_file = StringVar()
-projectdata_file.set(False)
+#Variables for the Checkbuttons
 
-Checkbutton(root, text = "submit.html", variable = submit_file, onvalue = 1, offvalue = 0).pack()
-Checkbutton(root, text = "projectdata.html", variable = projectdata_file, onvalue = 1, offvalue = 0).pack()
+submit_title = StringVar(submitTab, "0")
+submit_dateRequested = StringVar(submitTab, "0")
+submit_targetAudience = StringVar(submitTab, "0")
+submit_quoteRequired = StringVar(submitTab, "0")
+submit_submittedBy = StringVar(submitTab, "0")
 
+# submit.html checkbuttons 
 
-
-
-
-
-
+Checkbutton(submitTab, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0).pack(anchor=NW)
+Checkbutton(submitTab, text = "Date requested", variable = submit_dateRequested, onvalue = 1, offvalue = 0).pack(anchor=NW)
+Checkbutton(submitTab, text = "Target audience", variable = submit_targetAudience, onvalue = 1, offvalue = 0).pack(anchor=NW)
+Checkbutton(submitTab, text = "Quote Required", variable = submit_quoteRequired, onvalue = 1, offvalue = 0).pack(anchor=NW)
+Checkbutton(submitTab, text = "Submitted By", variable = submit_submittedBy, onvalue = 1, offvalue = 0).pack(anchor=NW)
 
 
 
