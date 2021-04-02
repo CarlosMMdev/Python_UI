@@ -2,11 +2,18 @@
 
 from tkinter import *
 from tkinter import ttk
+from bs4 import BeautifulSoup
+
+
+# def show_tag():
+#     print(soup.label['for'] = 'title')
+#     return
+
+
 
 
 root = Tk()
 root.title("PCF Creator")
-# root.config()
 
 #Creating TabControl object and declaring tabs
 tabControl = ttk.Notebook(root, width = 480, height = 320)
@@ -25,24 +32,18 @@ tabControl.add(labelxmlTab, text = "labelXML.js")
 
 tabControl.pack(expand = 1, fill = "both")
 
-
 # Tab How to use
-
-
-
 title_label = Label(HowToUseTab, text = "Welcome to PCF Creator", font=("Consolas", 24))
 title_label.grid()
 
 # Tab submit.html
-
 introFrame = Frame(submitTab)
 introFrame.grid()
 
-
+#IntroFrame
 Label(introFrame, text = "Choose the fields that you want to delete:").grid(sticky = W)
 
 #Variables for the Checkbuttons
-
 submit_title = StringVar(submitTab, "0")
 submit_dateRequested = StringVar(submitTab, "0")
 submit_targetAudience = StringVar(submitTab, "0")
@@ -57,13 +58,10 @@ submit_submittedBy = StringVar(submitTab, "0")
 submit_SendBackOriginal = StringVar(submitTab, "0")
 
 # submit.html checkbuttons 
-
-
 FieldsFrame = Frame(submitTab)
 FieldsFrame.grid()
 
-
-Checkbutton(FieldsFrame, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0).grid(column = 1, row = 1, sticky = W, pady = 10)
+Checkbutton(FieldsFrame, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0, command = show_tag()).grid(column = 1, row = 1, sticky = W, pady = 10)
 Checkbutton(FieldsFrame, text = "Date requested", variable = submit_dateRequested, onvalue = 1, offvalue = 0).grid(column = 2, row = 1, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Target audience", variable = submit_targetAudience, onvalue = 1, offvalue = 0).grid(column = 3, row = 1, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Quote required", variable = submit_quoteRequired, onvalue = 1, offvalue = 0).grid(column = 1, row = 2, sticky = W,pady = 10)
@@ -76,15 +74,25 @@ Checkbutton(FieldsFrame, text = "Purchase order", variable = submit_PurchaseOrde
 Checkbutton(FieldsFrame, text = "Submitted By", variable = submit_submittedBy, onvalue = 1, offvalue = 0).grid(column = 2, row = 4, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Send back original", variable = submit_SendBackOriginal, onvalue = 1, offvalue = 0).grid(column = 3, row = 4, sticky = W,pady = 10)
 
-
 #Delete button
-
 DeleteBtnFrame = Frame(submitTab)
 DeleteBtnFrame.grid()
 
 DeleteBtn = Button(DeleteBtnFrame, text = "Delete fields")
-DeleteBtn.grid()
+DeleteBtn.grid( pady = "12px")
 
+#Read HTML file and create the soup
+with open(r"C:\Users\jmora\Escritorio\Python\Testing PCF files\submit.html") as submit_file:
+    soup = BeautifulSoup(submit_file, "html.parser")
+    soup = soup.prettify()
+
+
+
+#Text box for preview HTML
+preview = Text(submitTab, width = "250")
+submitTab.grid_columnconfigure(0, weight=1)
+preview.insert(END, soup)
+preview.grid(row = 6, sticky = "NE" )
 
 
 root.mainloop()
