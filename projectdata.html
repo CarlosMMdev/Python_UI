@@ -1,0 +1,517 @@
+<div id="project__content" ng-if="!project">
+    <trans>flowToFlow.error.request.not.found</trans>
+</div>
+<div id="project__content" ng-if="project">
+	<form name="form.formProjectData" id="form.formProjectData" novalidate>
+		<h2 id="wcagHiddenMsg" class="sr-only sr-only-focusable" role="alert"></h2>
+	    <div id="tab1" class="forms">
+	        <div class="section__container" id="section1">
+	            <div class="section__container--title">
+	                <h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['provider.details.generalinformation']}}" tooltip-append-to-body="true">provider.details.generalinformation</trans></h5>
+	            </div>
+	            <div class="section__container--data visible">
+	                <div class="row">
+	                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" ng-repeat="colDef in columnsDef" ng-if="colDef.view == 'All' || (dashboard && colDef.view == 'Dashboard') || (!dashboard && colDef.view == 'ProjectList')" uib-tooltip="{{$root.labelXML.get(colDef.translateName)}}" tooltip-placement="top" tooltip-append-to-body="true">   
+	                        <div class="row">
+	                            <div class="col-xs-5 nopaddingleft" id="">
+	                                <b>{{$root.labelXML.get(colDef.translateName)}}</b>
+	                            </div>
+	                            <div class="col-xs-7 word-wrap">
+	                                <span ng-if="colDef.displayName=='Status'" class="{{iconMapping[project.requestClientStatus].icon}}" uib-tooltip="{{$root.labels[iconMapping[project.requestClientStatus].tooltip]}}" tooltip-placement="top" tooltip-append-to-body="true"></span>
+	                                {{project.dynamicColumnsData[colDef.fieldName]}}
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" ng-if="$root.security.showWfStatus">
+	                        <div class="row">
+	                            <div class="col-xs-5 nopaddingleft">
+	                                <b><trans>orf.delivery.display.title.step.count</trans></b>
+	                            </div>
+	                            <div class="col-xs-7">
+	                                <div id="percent__container">
+	                                    <div ng-if="project.stepsTotal" id="percent__container--in" ng-style="{ 'width' : (project.stepsDone/project.stepsTotal)*100+'%' }"></div>
+	                                    <div ng-if="!project.stepsTotal" id="percent__container--in" ng-style="{ 'width' : 0+'%' }"></div>
+	                                </div>
+	                                {{project.stepsDone}} / {{project.stepsTotal}}
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	                        <div class="row">
+	                            <div class="col-xs-5 nopaddingleft">
+	                                <b><trans>orf.project.action.requiered</trans></b>
+	                            </div>
+	                            <div class="col-xs-7">
+	                                <span ng-if="project.pendingReviews" class="v3-view" uib-tooltip="{{$root.labels['orf.project.review']}}" tooltip-append-to-body="true"></span>
+	                                <span ng-if="project.pendingQuotationApproval" class="v3-quotestoapprove" aria-hidden="true" uib-tooltip="{{$root.labels['customer.tooltip.client.statuses.waitingforapproval']}}" tooltip-append-to-body="true"></span>
+	                                <span ng-if="project.deliveredNotDownloadedTgtDocs && project.requestClientStatus!=1 && project.requestClientStatus!=2 " class="v3-download2" aria-hidden="true" uib-tooltip="{{$root.labels['orf.project.ready.download']}}" tooltip-append-to-body="true"></span>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="section__container focus-green" onKeyDown="$('#section2').is(':focus') && event.keyCode == 13 && $('#section2').toggleClass('open')" tabindex="0" id="section2" ng-if="project.requestClientStatus!=10 && projectQuote.quotation.length>0">
+	            <div class="section__container--title" onclick="$('#section2').toggleClass('open')">
+	                <h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['orf.project.quotation']}}" tooltip-append-to-body="true">orf.project.quotation</trans></h5> 
+	                <i class="fa fa-chevron-down"></i>
+	                <i class="fa fa-chevron-up"></i>
+	            </div>
+	            <div class="section__container--data inlinefiles" ng-if="project.requestClientStatus!=10 && projectQuote.quotation.length>0">
+	                <div class="row inlinefiles__title mt15">   
+	                    <div class="col-xs-1">&nbsp;</div>
+	                    <div class="col-xs-3"><trans>request.reference</trans></div>
+	                    <div class="col-xs-2"><trans>customer.projet.details.quotation.total</trans></div>
+	                    <div class="col-xs-3"><trans>OCR.Data.Fields.InputTemplateSelection.Date</trans></div>
+	                    <div class="col-xs-3 text-right">&nbsp;</div>
+	                </div>
+	                <hr class="margin0">
+	                <div class="row file" ng-repeat="quote in projectQuote.quotation">
+	
+	                    <div class="quotation__container">
+	                        <div class="row">
+	                        	<div class="col-xs-1">
+	                        		
+	                        	</div>
+	                            <div class="col-xs-3 descend">
+	                                <span>{{quote.quoteNumber}}</span>
+	                            </div>
+	                            <div class="col-xs-2 descend" uib-tooltip="{{$root.labels['customer.tooltip.table.quote.total']}}" tooltip-placement="top" tooltip-append-to-body="true">
+	                                <span>{{quote.total | currency:quote.currencySymbol}}</span>
+	                            </div>
+	                            <div class="col-xs-2 descend">
+	                                <span>{{quote.sentOn}}</span>
+	                            </div>
+	                            <div class="col-xs-3 contButtonsActionsQuot">
+	                            	<a type="button" id="project_quotation_icon_action_download-{{quote.quoteNumber}}" ng-if="quote.status<=1" go-click="/get?feeder_name=GetQuotation&quote_id={{quote.quoteId}}" class="icon-button-green" uib-tooltip="{{$root.labels['customer.tooltip.table.view.quote']}}" tooltip-placement="top" tooltip-append-to-body="true">
+	                                    <i class="v3-arrowdown"></i>
+	                                </a>
+	                                <a type="button" id="project_quotation_icon_action_check-{{quote.quoteNumber}}"  ng-if="quote.status<1" ng-click="acceptQuote(quote.quoteId,project.id);" class="icon-button-green" tooltip-placement="top" tooltip-append-to-body="true">
+	                                    <i class="v3-check2"></i>
+	                                </a>
+	                                <span ng-if="quote.status===1" id="project_quotation_icon_action_accepted-{{quote.quoteNumber}}"  class="textQuotation">
+	                                	&nbsp;
+	                                    <i class="v3-check2 check"></i>
+	                                    <trans>orf.project.quote.accepted</trans>
+	                                </span>
+	                                
+	                                <span ng-if="quote.status > 1" id="project_quotation_icon_action_rejected-{{quote.quoteNumber}}" class="textQuotation">
+	                                    <i class="v3-canceled nocheck"></i>
+	                                    <trans>customer.table.quotation.rejected</trans>
+	                                </span>
+
+								</div>
+	                        </div>
+	                       <a ng-class="project.quotationRequired?'btn__invert':'btn__invert cursor-point'" ng-click="!project.quotationRequired || cancelProject(project.id);" class="btn__invert"><trans>orf.project.cancel</trans></a>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="section__container focus-green" onKeyDown="$('#section3').is(':focus') && event.keyCode == 13 && $('#section3').toggleClass('open')" tabindex="0" id="section3">
+				<div class="section__container--title" onclick="$('#section3').toggleClass('open')">
+					<h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['request.source.target.documents']}}" tooltip-append-to-body="true">request.source.target.documents</trans></h5>
+					<i class="v3-down"></i>
+					<i class="v3-up"></i>
+				</div>
+				<div class="section__container--data">
+					<div ng-show="project.documents.length > 0">
+						<inlinefiles id="inlinefiles" documents="project.documents" prid="project.id" language="project.srcLanguage.name" project="project" ng-show="!general" class="inlinefiles"> </inlinefiles>
+					</div>
+					
+					<div class="row" ng-if="general">
+						<div class="col-xs-12">
+							<upload></upload>
+						</div>
+					</div>
+				</div>
+			</div>
+	        <div class="section__container focus-green" onKeyDown="$('#section4').is(':focus') && event.keyCode == 13 && $('#section4').toggleClass('open')" tabindex="0"" id="section4">
+	            <div class="section__container--title" onclick="$('#section4').toggleClass('open')">
+	                <h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['request.details']}}" tooltip-append-to-body="true">request.details</trans></h5>
+	                <i class="v3-down"></i>
+	                <i class="v3-up"></i>
+	            </div>
+	            <div class="section__container--data">
+	            	<div class="row mt20 form__container" ng-class="{'mt60': comments.length>0}">
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 leftCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull">
+	                                <b><trans>request.title</trans> <span ng-if="$root.params.CLIENT_MODULE_OPTIONS_TITLE_REQUIRED">(*)</span>:</b>
+	                            </label>
+	                            <div class="inputsFull">
+		                            <span class="textForms" ng-show="!general" uib-tooltip="{{project.title}}">
+										{{project.title|limitTo:30}} <span ng-if="project.title.length > 30">...</span>
+									</span>
+	                                <input class="form-control" aria-invalid={{errorsAriaInvalid['title']}} aria-describedBy="err_title255 err_titlereuired" ng-if="$root.params.CLIENT_MODULE_OPTIONS_TITLE_REQUIRED && general" ng-required="true" maxlength="255" name="title" id="title" ng-model="project.title" type="text" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.title']}}" tooltip-append-to-body="true" aria-label="{{$root.labels['request.title']}}">
+	                                <input class="form-control" aria-invalid={{errorsAriaInvalid['title']}} aria-describedBy="err_title255 err_titlereuired" ng-if="!$root.params.CLIENT_MODULE_OPTIONS_TITLE_REQUIRED && general" maxlength="255" ng-model="project.title" type="text" name="title" id="title" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.title']}}" tooltip-append-to-body="true" aria-label="{{$root.labels['request.title']}}">
+	                                <div class="red-error" ng-show="project.title.length==255 && general">
+	                                    <div id="err_title255"><trans>po.field.title.255</trans></div>
+	                                </div>
+	                                <div ng-show="form.formProjectData.title.$error.required && general">
+	                                    <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData.title.$touched">
+	                                        <div id="err_titlereuired" ng-show="form.formProjectData.title.$error.required"><trans>client.alertTitleRequired</trans></div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="dateRequested"><b><trans>client.dateRequested</trans>:</b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms" ng-show="!general">{{project.receptionDate.dateFormatted}}</p>
+	                                <input class="form-control" name="dateRequested" id="dateRequested" readonly ng-model="project.receptionDate.dateFormatted" type="text" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.date.requested']}}" tooltip-append-to-body="true" ng-show="general">
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="targetAudience"><b><trans>orf.target.audience</trans>:</b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms" ng-show="!general">{{project.sendTo.name}}</p>
+	                                <select class="form-control" name="targetAudience" id="targetAudience" ng-options="target as target.name for target in targetAudiences track by target.id" ng-model="project.sendTo" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.target.audience']}}" tooltip-append-to-body="true" ng-show="general"></select>
+	                            </div>
+	                        </div>
+						</div>
+	            	</div>
+	            	<div class="row form__container">
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 leftCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="quotationRequired"><b><trans>request.quotationRequired</trans>:</b></label>
+	                            <div class="inputsFull">
+	                                <input name="quotationRequired" class="refCheckBox" id="quotationRequired" ng-disabled="!general" ng-model="project.quotationRequired" type="checkbox" tooltip-placement="top-left" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.quote.required']}}" tooltip-append-to-body="true">
+	                                <i class="v3-square"></i>
+	                                <i class="v3-checksquare"></i>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="referenceRequestNumber"><b><trans>referenceRequestNo</trans>:</b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms textFormsAuto" ng-show="!general">{{project.refReqNbr}}</p>
+	                                <input class="form-control" name="referenceRequestNumber" id="referenceRequestNumber" ng-model="project.refReqNbr" type="text" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.reference.project.number']}}" tooltip-append-to-body="true" ng-show="general">
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="workflowTemplateId"><b><trans>services.list</trans>:</b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms"  ng-show="!general || project.hasWorkflow">{{project.workflowTemplate.name}}</p>
+	                                <select class="form-control" name="workflowTemplateId" id="workflowTemplateId" ng-model="project.workflowTemplate" ng-options="workft as workft.name for workft in workflowsTemplates track by workft.id" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.service.list']}}" tooltip-append-to-body="true" ng-show="general && !project.hasWorkflow"></select>
+	                            </div>
+	                        </div>
+						</div>
+	            	</div>
+	            	<div class="row form__container">
+	            		<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 leftCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="sourceLanguageId">
+	                                <b><trans>customer.projet.details.project.information.trans.from</trans> (*):</b>
+	                            </label>
+	                            <div class="inputsFull">
+	                                <span class="textForms" ng-show="!general">{{project.srcLanguage.name}}</span>
+	                               
+	                                <select class="form-control" name="sourceLanguageId" aria-invalid={{errorsAriaInvalid["sourceLanguageId"]}} aria-describedBy="err_lang" id="sourceLanguageId" ng-required="true" ng-model="project.srcLanguage" ng-options="lang as lang.name for lang in languages track by lang.id" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.translate.from']}}" tooltip-append-to-body="true" ng-show="general"></select>
+	                                <div ng-show="form.formProjectData.sourceLanguageId.$error.required">
+	                                    <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData.sourceLanguageId.$touched">
+	                                        <div id="err_lang" ng-show="form.formProjectData.sourceLanguageId.$error.required"><trans>request.noLanguage</trans></div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull"><b><trans>customer.projet.details.project.information.trans.into</trans> (*):</b></label>
+	                            <div class="inputsFull">
+	                                <div class="languagesContainer" ng-show="!general">
+	                                    <p ng-repeat="lang in project.tgtLanguages track by $index" class="textForms" ng-show="!general">
+	                                        {{lang.name}}
+	                                    </p>
+	                                </div>
+	                                <div class="translate__container" ng-show="general">
+	                                    <div class="translate__container--line" ng-repeat="model in project.tgtLanguages track by $index">
+	                                        <select class="form-control formProjectDetails" aria-invalid={{errorsAriaInvalid["targetLanguageIds"]}} aria-describedBy="err_targetst2_{{$index}} err_targetst1" name="targetLanguageIds{{$index}}" ng-required="true" id="targetLanguageIds{{$index}}" ng-model="project.tgtLanguages[$index]" ng-options="lang as lang.name for lang in languages track by lang.id" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.translate.into']}}" tooltip-append-to-body="true" aria-label="{{$root.labels['customer.tooltip.submit.project.information.translate.into']}}"></select>
+	                                        <div ng-show="st2[$index]">
+	                                            <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData['targetLanguageIds'+$index].$touched">
+	                                                <div id="err_targetst2_{{$index}}"><trans>request.noTarget</trans></div>
+	                                            </div>
+	                                        </div>
+	                                        <div class="buttons-right">
+	                                            <a class="icon-button-green-plus" id="moreLang" href="" ng-if="$first;" ng-click="addLanguage();" aria-label="{{$root.labels['add.translate.language']}}">
+	                                                <i class="v3-plus" aria-hidden="true"></i>
+	                                            </a>
+	                                            <a class="icon-button-green-plus" id="lessLang--{{$index}}" href="" ng-if="!$first;" ng-click="delLanguage($index);" aria-label="{{$root.labels['remove.translate.language']}}">
+	                                                <i class="v3-minus" aria-hidden="true"></i>
+	                                            </a>
+	                                        </div>
+	                                    </div>
+	                                    <div ng-show="st1">
+	                                        <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData['targetLanguageIds'+$index].$touched">
+	                                            <div id="err_targetst1"><trans>request.noTarget</trans></div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="referenceRequestNumber"><b><trans>quote.deliveryDate</trans>(*):</b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms" ng-show="!general">{{project.deliveryDate.dateFormatted}} {{project.deliveryDate.timeFormatted}}</p>
+	                                <div class="row" ng-show="general">
+	                                    <div class="col-xs-12" id="date-group">
+											<input type="text"
+												aria-invalid="{{errorsAriaInvalid['date']}}" id="date"
+												aria-label="{{$root.labels['quote.deliveryDate']}}"
+												aria-describedBy="err_daterequired err_datepast err_passTargetDate"
+												ng-class="$root.params.CLIENT_MODULE_SHOW_HOURS_INPUT_TARGET_DATE?'form-control cal-inputs-with-time':'form-control cal-inputs-without-time'"
+												name="deliveryDate"
+												uib-datepicker-popup="{{contactInfo.dateFormat}}"
+												ng-model="project.datepicker.dateInputs"
+												is-open="popup.opened" datepicker-options="dateOptions"
+												ng-required="true"
+												close-text="{{$root.labels['manningTable.datepicker.close']}}"
+												current-text="{{$root.labels['manningTable.datepicker.today']}}"
+												clear-text="{{$root.labels['manningTable.datepicker.clear']}}"
+												alt-input-formats="altInputFormats" tooltip-placement="top"
+												uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.target.date']}}"
+												tooltip-append-to-body="true" check-before-today />
+
+											<button type="button" class="icon-button-input-green" id="icon-projectDetails-targetDate" ng-click="openPopup()" aria-label="{{$root.labels['open.calendar']}}"><i class="v3-calendar"></i></button>
+
+											<div class="hour-submit"
+												ng-if="$root.params.CLIENT_MODULE_SHOW_HOURS_INPUT_TARGET_DATE"
+												id="timeInputs"
+												ng-init="showMeridian=$root.profile.timeFormat.indexOf('a')!=-1">
+												<div name="timeInputs" ng-required="true" uib-timepicker
+													ng-if="$root.templatesTimepicker2Done"
+													template-url="timepicker2.html"
+													ng-model="project.datepicker.timeInputs" hour-step="hstep"
+													minute-step="mstep" show-meridian="showMeridian"
+													check-before-today></div>
+											</div>
+										</div>
+	                                    
+	                                    <div class="col-xs-12" ng-show="targetDateToAfter">
+	                                         <div class="red-error">
+	                                            <div id="err_datepast"><trans>orf.past.date</trans></div>
+	                                        </div>
+	                                    </div>
+	                                    <div class="col-xs-12" ng-show="form.formProjectData.deliveryDate.$error.required || form.formProjectData.timeInputs.$error.required">
+	                                        <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData.deliveryDate.$touched">
+	                                            <div id="err_daterequired" ng-show="form.formProjectData.deliveryDate.$error.required"><trans>request.alertDeliveryDate</trans></div>
+	                                        </div>
+	                                        <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData.timeInputs.$touched">
+	                                           <div id="err_time" ng-show="form.formProjectData.timeInputs.$error.required"><trans>request.alertDeliveryTime</trans></div>
+	                                        </div>
+	                                    </div>
+										<div class="col-xs-12" role="alert"
+											ng-show="form.formProjectData.deliveryDate.$error.isBeforeToday 
+	                                    		&& !((form.formProjectData.$submitted || form.formProjectData.timeInputs.$touched) 
+	                                    		&& (form.formProjectData.deliveryDate.$error.required || form.formProjectData.timeInputs.$error.required))"
+											aria-live="polite">
+											<div id="err_passTargetDate" class="red-error">
+												<trans>orf.past.date</trans>
+											</div>
+										</div>
+									</div>
+	                            </div>
+	                        </div>
+						</div>
+	            	</div>
+	            	<div class="row form__container">
+	            		<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 leftCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="purchaseOrder"><b><trans>orf.project.po</trans></b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms textFormsAuto" ng-show="!general">{{project.purchaseOrder}}</p>
+	                                <input class="form-control" aria-invalid={{errorsAriaInvalid["purchaseOrder"]}} aria-describedBy="err_purchase" maxlength="255" name="purchaseOrder" id="purchaseOrder" ng-model="project.purchaseOrder" type="text" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.po']}}" tooltip-append-to-body="true" ng-show="general">
+	                                <div class="red-error" ng-show="project.purchaseOrder.length==255">
+	                                    <div id="err_purchase"><trans>po.field.over.255</trans></div>
+	                                </div>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="docSubmittedBy"><b><trans>orf.submited</trans>:</b></label>
+	                            <div class="inputsFull">
+	                                <p class="textForms" ng-show="!general">{{project.sentBy.name}}</p>
+	                                <select class="form-control" name="docSubmittedBy" id="docSubmittedBy" ng-options="mode as mode.name for mode in deliveriesmode track by mode.id" ng-model="project.sentBy" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.documents.submittedby']}}" tooltip-append-to-body="true" ng-show="general"></select>
+	                            </div>
+	                        </div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 rightCol">
+							<div class="form__line form__line--auto">
+	                            <label class="labelFull" for="sendBackSource"><b><trans>OCR.NewAndEdit.SendAndReceive.SendBackOriginalDoc</trans></b></label>
+	                            <div class="inputsFull">
+	                                <input name="sendBackSource" class="refCheckBox" id="sendBackSource" ng-disabled="!general"  ng-model="project.sendBackSource" type="checkbox" tooltip-placement="top-left" uib-tooltip="{{$root.labels['customer.tooltip.project.details.project.information.send.back']}}" tooltip-append-to-body="true">
+	                                <i class="v3-square"></i>
+	                                <i class="v3-checksquare"></i>
+	                            </div>
+	                        </div>
+						</div>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="section__container focus-green" onKeyDown="$('#section5').is(':focus') && event.keyCode == 13 && $('#section5').toggleClass('open')" tabindex="0"  id="section5">
+	            <div class="section__container--title" onclick="$('#section5').toggleClass('open')">
+	                <h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['request.comment']}}" tooltip-append-to-body="true">request.comment</trans></h5>
+	                <i class="v3-down"></i>
+	                <i class="v3-up"></i>
+	            </div>
+	            <div class="section__container--data">
+	                <div class="inputs" ng-show="!general">
+	                    <pre id="note" class="common_font_rich_text focus-green" ng-if="!$root.params.USE_RICH_TEXT_FOR_INSTRUCTIONS" tabindex="0"><p>{{project.instructions[clientNoteIndex].note}}</p></pre>
+	                    <div id="note" ng-if="$root.params.USE_RICH_TEXT_FOR_INSTRUCTIONS" ng-bind-html="project.instructions[clientNoteIndex].note"></div>
+	                </div>
+	                <div class="inputs" ng-show="general">
+	                    <textarea name="instructions" id="instructions" aria-invalid={{errorsAriaInvalid["instructions"]}} aria-describedBy="err_instructions" ng-required="project.sendTo.moreInfoNeeded" ng-if="!$root.params.USE_RICH_TEXT_FOR_INSTRUCTIONS" class="form-control" ng-model="project.instructions[clientNoteIndex].note" cols="30" rows="10" aria-label="{{$root.labels['request.comment']}}"></textarea>
+	                    <text-angular name="instructions" id="instructionsRich" ng-required="project.sendTo.moreInfoNeeded" ng-if="$root.params.USE_RICH_TEXT_FOR_INSTRUCTIONS" ng-model="project.instructions[clientNoteIndex].note"></text-angular>
+	                    <div class="red-error" ng-show="form.formProjectData.$submitted || form.formProjectData.instructions.$touched">
+	                          <div id="err_instructions" ng-show="form.formProjectData.instructions.$error.required"><trans>request.alertNoInstructions</trans></div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="section__container focus-green" onKeyDown="$('#section6').is(':focus') && event.keyCode == 13 && $('#section6').toggleClass('open')" tabindex="0"  id="section6">
+	            <div class="section__container--title" onclick="$('#section6').toggleClass('open')">
+	                <h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['OCR.NewAndEdit.ClientInformation']}}" tooltip-append-to-body="true">OCR.NewAndEdit.ClientInformation</trans></h5>
+	                <i class="v3-down"></i>
+	                <i class="v3-up"></i>
+	            </div>
+	            <div class="section__container--data">    
+	                <div class="row form__container">   
+	                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+	                        <div class="form__line form__line--auto">
+	                            <label class="labelFull"><b><trans>OCR.NewAndEdit.ClientInformation.Name</trans></b></label>
+	                            <p class="textFull">{{project.requestedBy.firstLastName}}</p>
+	                        </div>
+	                    </div>
+	                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+	                        <div class="form__line form__line--auto">
+	                            <label class="labelFull"><b><trans>OCR.NewAndEdit.ClientInformation.Email</trans></b></label>
+	                            <p class="textFull ellipsis">{{project.requestedBy.notificationEmail}}</p>
+	                        </div>
+	                    </div>    
+	                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+	                        <div class="form__line form__line--auto">
+	                            <label class="labelFull" for="requestedByCcId"><b><trans>OCR.NewAndEdit.ClientInformation.RequestedByCC</trans></b></label>
+	                            <div class="col-xs-12" ng-show="!project.isOwner || !general">
+	                                <p class="textFull ellipsis" ng-repeat="contact in project.requestedByCcs track by $index">
+	                                    {{contact.name}}
+	                                </p>
+	                            </div>
+	                            <div class="col-xs-12" ng-show="project.isOwner  && general">
+	                                <div class="row" ng-repeat="contact in project.requestedByCcs track by $index" ng-if="project.requestedByCcs.length > 0">
+	                                    <div class="col-xs-12">
+	                                        <select class="form-control formProjectDetails" id="contactRelated{{$index}}" name="contactRelated{{$index}}" ng-required="true" ng-model="project.requestedByCcs[$index]" ng-options="contact as contact.name for contact in project.contactRelated track by contact.id" aria-label="{{$root.labels['client.deliverAlsoTo']}}"></select>
+	                                        <div class="buttons-right">
+	                                            <a class="icon-button-green-plus" id="moreContactProjectData"  href="" ng-if="$first;" ng-click="addContactRelated();" aria-label="{{$root.labels['select.contact.deliver.to']}}"><i class="v3-plus" aria-hidden="true"></i></a>
+	                                            <a class="icon-button-green-plus" id="lessContactProjectData-{{$index}}"  href="" ng-if="!$first;" ng-click="delContactRelated($index);" aria-label="{{$root.labels['remove.contact.deliver.to']}}"><i class="v3-minus" aria-hidden="true"></i></a>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="row form__container">   
+	                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+	                        <div class="form__line form__line--auto">
+	                            <label class="labelFull" for=""><b><trans>OCR.NewAndEdit.ClientInformation.BusinessUnit</trans></b></label>
+	                            <p class="textFull">{{project.businessUnitName}}</p>
+	                        </div>
+	                    </div>
+	                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+	                        <div class="form__line form__line--auto">
+	                            <label class="labelFull" for=""><b><trans>OCR.NewAndEdit.ClientInformation.Customer</trans></b></label>
+	                            <p class="textFull">{{project.customer.name}}</p>
+	                        </div>
+	                    </div>
+	                    <div class="form-group" ng-if="$root.params.ORF_SHOW_REQUEST_BY_CC_STRING">
+		                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+		                        <div class="form__line form__line--auto">
+		                            <label class="labelFull"><b><trans>orf.project.other.cc</trans></b></label>
+		                            <p class="textFull ellipsis">{{project.requestedByCcString}}</p>
+		                        </div>
+		                    </div>                
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="section__container focus-green" onKeyDown="$('#section7').is(':focus') && event.keyCode == 13 && $('#section7').toggleClass('open')" tabindex="0""  id="section7" ng-if="$root.params.SHOW_ORF_DIRECT_TEXT_TRANSLATION">
+	            <div class="section__container--title" onclick="$('#section7').toggleClass('open')">
+	                <h5><trans tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.translation.title']}}" tooltip-append-to-body="true">orf.direct.text.translation</trans></h5>
+	                <i class="v3-down"></i>
+	                <i class="v3-up"></i>
+	            </div>
+	            <div class="section__container--data">
+	                <div class="row form__container">
+	                    <div class="col-xs-12">
+	                        <div class="form__line--full" ng-if="!general && project.directName && project.directName != ''">
+	                            <label>{{project.directName}}:</label>
+	                            <pre tabindex="0" class="focus-green">{{project.directContent}}</pre>
+	                            <button class="btn btn-default btCopy pull-right" ngclipboard data-clipboard-text="{{project.directContent}}">
+	                                <trans>copy.to.clipboard</trans>
+	                            </button>
+	                        </div>
+	                        <div class="form__line--full" ng-if="general">
+	                           <textarea class="form-control" aria-label="{{$root.labels['orf.direct.text.translation']}}" aria-invalid={{errorsAriaInvalid['direct-trans']}} ng-model="project.directTranslation" name="direct-trans" id="direct-trans" cols="30" rows="10" ng-change="customErrors.valid(customErrors['direct-trans'])" aria-describedBy="err_lenghtDirectText" ng-maxlength="($root.params.MAX_DIRECT_TEXT_TRANSLATION != 0) ? $root.params.MAX_DIRECT_TEXT_TRANSLATION : ''"></textarea>
+	                        </div>
+	                    </div>
+		        		<div class="col-xs-12">
+				    		<div ng-show="customErrors['direct-trans'].$invalid || form.formProjectData['direct-trans'].$error.maxlength" aria-live="polite">
+			     				<div id="err_lenghtDirectText" class="red-error"><trans>orf.directtranslation.lenght.maxlength</trans><span> {{$root.params.MAX_DIRECT_TEXT_TRANSLATION}}.</span></div>
+		        			</div>
+		      			</div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+
+	    <div id="tab2">
+	        <div class="row mt15">
+	            <div class="col-xs-12">                    
+	                <div class="titles__contents" ng-if="comments.length>0">
+	                    <h6><trans>OCR.NewAndEdit.RequestInformation.Comments</trans></h6>
+	                    <hr>
+	                </div>
+	                <div class="toggle__data visible mt0">
+	                    <div class="row" ng-if="comments.length>0">
+	                        <div class="col-xs-12 nopadding">
+	                            <div class="full__gray">
+	                                <div class="row">
+	                                    <div class="col-xs-12">
+	                                        <p ng-repeat="p in comments">{{p.note}}</p> 
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</form>
+	
+</div>
+<div class="endRowTableProject">
+    <button ng-if="showDeleteBtn" type="submit" class="btn btn-default pull-righ button-view-projects" ng-click="openDeleteProject();" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.delete']}}" tooltip-append-to-body="true">
+        <trans>orf.delete</trans>
+    </button>
+    <button ng-show="editLink" ng-click="submit($event);" class="btn btn-default btAcceptSubmit pull-right button-view-projects" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.submit']}}" tooltip-append-to-body="true">
+        <trans>manningTable.queryBtn</trans>
+    </button>
+    <button ng-show="editLink" type="submit" class="btn btn-default btCancelSubmit pull-right btCancelProfile button-view-projects" ng-click="edit();clearForm();" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.cancel']}}" tooltip-append-to-body="true">
+        <trans>manningTable.taskmodal.cancel</trans>
+    </button>
+
+	<a ng-show="!editLink" ng-click="edit('general');" class="button-view-projects project-edit dashboard-button orange-button btn btn-default" tooltip-placement="top" uib-tooltip="{{$root.labels['customer.tooltip.project.details.edit']}}" tooltip-append-to-body="true">
+        <trans>orf.project.edit</trans>
+    </a>  
+</div>

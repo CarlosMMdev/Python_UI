@@ -2,11 +2,66 @@
 
 from tkinter import *
 from tkinter import ttk
+from bs4 import BeautifulSoup
 
 
 root = Tk()
 root.title("PCF Creator")
-# root.config()
+
+
+
+
+
+def show_field():
+    if (submit_title.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, submit_tag)
+
+    elif(submit_dateRequested.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+    
+    elif(submit_targetAudience.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_quoteRequired.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_ReferenceProjectNumber.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_ServicesList.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_TranslateFrom.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_TranslateInto.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_TargetDate.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_PurchaseOrder.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_submittedBy.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+    elif(submit_SendBackOriginal.get()):
+        submit_preview.delete('1.0', END)
+        submit_preview.insert(INSERT, tag)
+
+
 
 #Creating TabControl object and declaring tabs
 tabControl = ttk.Notebook(root, width = 480, height = 320)
@@ -63,7 +118,7 @@ FieldsFrame = Frame(submitTab)
 FieldsFrame.grid()
 
 
-Checkbutton(FieldsFrame, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0).grid(column = 1, row = 1, sticky = W, pady = 10)
+Checkbutton(FieldsFrame, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0, command = show_field).grid(column = 1, row = 1, sticky = W, pady = 10)
 Checkbutton(FieldsFrame, text = "Date requested", variable = submit_dateRequested, onvalue = 1, offvalue = 0).grid(column = 2, row = 1, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Target audience", variable = submit_targetAudience, onvalue = 1, offvalue = 0).grid(column = 3, row = 1, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Quote required", variable = submit_quoteRequired, onvalue = 1, offvalue = 0).grid(column = 1, row = 2, sticky = W,pady = 10)
@@ -80,10 +135,39 @@ Checkbutton(FieldsFrame, text = "Send back original", variable = submit_SendBack
 #Delete button
 
 DeleteBtnFrame = Frame(submitTab)
-DeleteBtnFrame.grid()
+DeleteBtnFrame.grid(pady = 20)
 
 DeleteBtn = Button(DeleteBtnFrame, text = "Delete fields")
 DeleteBtn.grid()
+
+
+#Open submit file
+
+with open("submit.html") as submit_file:
+    soup = BeautifulSoup(submit_file, "html.parser")
+    # soup = soup.prettify()
+
+
+
+# Searching in the soup each field preview text
+submit_tags = soup.find_all("trans")
+
+for tag in submit_tags:
+
+    if tag.text == "request.title":
+        title_tag = tag.find_parents("div")
+
+    elif tag.text == "client.dateRequested":
+        dateRequested_tag = tag.find_parents("div")
+
+
+
+
+#Add text box
+
+submit_preview = Text(submitTab, width = 180)
+submit_preview.grid()
+# submit_preview.insert(INSERT, soup)
 
 
 
