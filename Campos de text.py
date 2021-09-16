@@ -3,21 +3,10 @@
 from tkinter import *
 from tkinter import ttk
 from bs4 import BeautifulSoup
-<<<<<<< HEAD
-=======
-
-
-# def show_tag():
-#     print(soup.label['for'] = 'title')
-#     return
-
-
->>>>>>> 1e7a29226f326b35256202a68a99bcd6e6e1f3e7
 
 
 root = Tk()
 root.title("PCF Creator")
-<<<<<<< HEAD
 
 
 
@@ -73,8 +62,6 @@ def show_field():
         submit_preview.insert(INSERT, tag)
 
 
-=======
->>>>>>> 1e7a29226f326b35256202a68a99bcd6e6e1f3e7
 
 #Creating TabControl object and declaring tabs
 tabControl = ttk.Notebook(root, width = 480, height = 320)
@@ -122,12 +109,8 @@ submit_SendBackOriginal = StringVar(submitTab, "0")
 FieldsFrame = Frame(submitTab)
 FieldsFrame.grid()
 
-<<<<<<< HEAD
 
 Checkbutton(FieldsFrame, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0, command = show_field).grid(column = 1, row = 1, sticky = W, pady = 10)
-=======
-Checkbutton(FieldsFrame, text = "Title", variable = submit_title, onvalue = 1, offvalue = 0, command = show_tag()).grid(column = 1, row = 1, sticky = W, pady = 10)
->>>>>>> 1e7a29226f326b35256202a68a99bcd6e6e1f3e7
 Checkbutton(FieldsFrame, text = "Date requested", variable = submit_dateRequested, onvalue = 1, offvalue = 0).grid(column = 2, row = 1, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Target audience", variable = submit_targetAudience, onvalue = 1, offvalue = 0).grid(column = 3, row = 1, sticky = W,pady = 10)
 Checkbutton(FieldsFrame, text = "Quote required", variable = submit_quoteRequired, onvalue = 1, offvalue = 0).grid(column = 1, row = 2, sticky = W,pady = 10)
@@ -150,22 +133,7 @@ DeleteBtn.grid( pady = "12px")
 #Read HTML file and create the soup
 with open(r"C:\Users\jmora\Escritorio\Python\Testing PCF files\submit.html") as submit_file:
     soup = BeautifulSoup(submit_file, "html.parser")
-    soup = soup.prettify()
-
-
-
-#Text box for preview HTML
-preview = Text(submitTab, width = "250")
-submitTab.grid_columnconfigure(0, weight=1)
-preview.insert(END, soup)
-preview.grid(row = 6, sticky = "NE" )
-
-#Open submit file
-
-with open("submit.html") as submit_file:
-    soup = BeautifulSoup(submit_file, "html.parser")
     # soup = soup.prettify()
-
 
 
 # Searching in the soup each field preview text
